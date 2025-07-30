@@ -1,0 +1,70 @@
+version: "3"
+
+services:
+  teslamate:
+    image: teslamate/teslamate:2.0.0
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - 1panel-network
+    depends_on:
+      - mosquitto
+    environment:
+      - DATABASE_USER=${TM_DB_USER}
+      - DATABASE_PASS=${TM_DB_PASS}
+      - DATABASE_NAME=${TM_DB_NAME}
+      - DATABASE_HOST=${PANEL_DB_HOST}
+      - MQTT_HOST=mosquitto
+      - ENCRYPTION_KEY=${TM_ENCRYPTION_KEY}
+      - TZ=${TZ}
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:4000
+    volumes:
+      - ./data/teslamate:/opt/app/import
+    labels:
+      createdBy: "Apps"
+
+  grafana:
+    image: teslamate/grafana:2.0.0
+    container_name: ${CONTAINER_NAME}-grafana
+    restart: unless-stopped
+    networks:
+      - 1panel-network
+# depends_on database 已移除，使用外部数据库
+    environment:
+      - DATABASE_USER=${TM_DB_USER}
+      - DATABASE_PASS=${TM_DB_PASS}
+      - DATABASE_NAME=${TM_DB_NAME}
+      - DATABASE_HOST=${PANEL_DB_HOST}
+      - GRAFANA_PASSWD=${GRAFANA_PW}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PW}
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_SERVER_DOMAIN=localhost
+      - GF_SERVER_ROOT_URL=http://localhost:${GRAFANA_PORT}/
+    ports:
+      - ${GRAFANA_PORT}:3000
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    labels:
+      createdBy: "Apps"
+
+# database 服务已移除，使用外部 PostgreSQL 服务
+  # 请在安装前先创建 PostgreSQL 数据库服务
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: ${CONTAINER_NAME}-mosquitto
+    restart: unless-stopped
+    networks:
+      - 1panel-network
+    command: mosquitto -c /mosquitto-no-auth.conf
+    volumes:
+      - ./data/mosquitto/config:/mosquitto/config
+      - ./data/mosquitto/data:/mosquitto/data
+    labels:
+      createdBy: "Apps"
+
+networks:
+  1panel-network:
+    external: true
