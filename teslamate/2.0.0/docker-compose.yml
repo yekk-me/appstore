@@ -1,0 +1,84 @@
+version: "3"
+
+services:
+  teslamate:
+    image: teslamate/teslamate:2.0.0
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
+    networks:
+      - 1panel-network
+    depends_on:
+      - database
+      - mosquitto
+    environment:
+      - DATABASE_USER=${TM_DB_USER}
+      - DATABASE_PASS=${TM_DB_PASS}
+      - DATABASE_NAME=${TM_DB_NAME}
+      - DATABASE_HOST=database
+      - MQTT_HOST=mosquitto
+      - ENCRYPTION_KEY=${TM_ENCRYPTION_KEY}
+      - TZ=${TZ}
+    ports:
+      - ${PANEL_APP_PORT_HTTP}:4000
+    volumes:
+      - ./data/teslamate:/opt/app/import
+    labels:
+      createdBy: "Apps"
+
+  grafana:
+    image: teslamate/grafana:2.0.0
+    container_name: ${CONTAINER_NAME}-grafana
+    restart: unless-stopped
+    networks:
+      - 1panel-network
+    depends_on:
+      - database
+    environment:
+      - DATABASE_USER=${TM_DB_USER}
+      - DATABASE_PASS=${TM_DB_PASS}
+      - DATABASE_NAME=${TM_DB_NAME}
+      - DATABASE_HOST=database
+      - GRAFANA_PASSWD=${GRAFANA_PW}
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PW}
+      - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_SERVER_DOMAIN=localhost
+      - GF_SERVER_ROOT_URL=http://localhost:${GRAFANA_PORT}/
+    ports:
+      - ${GRAFANA_PORT}:3000
+    volumes:
+      - ./data/grafana:/var/lib/grafana
+    labels:
+      createdBy: "Apps"
+
+  database:
+    image: postgres:17
+    container_name: ${CONTAINER_NAME}-database
+    restart: unless-stopped
+    networks:
+      - 1panel-network
+    environment:
+      - POSTGRES_USER=${TM_DB_USER}
+      - POSTGRES_PASSWORD=${TM_DB_PASS}
+      - POSTGRES_DB=${TM_DB_NAME}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    labels:
+      createdBy: "Apps"
+
+  mosquitto:
+    image: eclipse-mosquitto:2
+    container_name: ${CONTAINER_NAME}-mosquitto
+    restart: unless-stopped
+    networks:
+      - 1panel-network
+    command: mosquitto -c /mosquitto-no-auth.conf
+    volumes:
+      - ./data/mosquitto/config:/mosquitto/config
+      - ./data/mosquitto/data:/mosquitto/data
+    labels:
+      createdBy: "Apps"
+
+networks:
+  1panel-network:
+    external: true
