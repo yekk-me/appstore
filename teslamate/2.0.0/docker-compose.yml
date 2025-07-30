@@ -8,12 +8,13 @@ services:
     networks:
       - 1panel-network
     depends_on:
+      - database
       - mosquitto
     environment:
       - DATABASE_USER=${TM_DB_USER}
       - DATABASE_PASS=${TM_DB_PASS}
       - DATABASE_NAME=${TM_DB_NAME}
-      - DATABASE_HOST=${PANEL_DB_HOST}
+      - DATABASE_HOST=database
       - MQTT_HOST=mosquitto
       - ENCRYPTION_KEY=${TM_ENCRYPTION_KEY}
       - TZ=${TZ}
@@ -30,12 +31,13 @@ services:
     restart: unless-stopped
     networks:
       - 1panel-network
-# depends_on database 已移除，使用外部数据库
+    depends_on:
+      - database
     environment:
       - DATABASE_USER=${TM_DB_USER}
       - DATABASE_PASS=${TM_DB_PASS}
       - DATABASE_NAME=${TM_DB_NAME}
-      - DATABASE_HOST=${PANEL_DB_HOST}
+      - DATABASE_HOST=database
       - GRAFANA_PASSWD=${GRAFANA_PW}
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PW}
@@ -49,8 +51,20 @@ services:
     labels:
       createdBy: "Apps"
 
-# database 服务已移除，使用外部 PostgreSQL 服务
-  # 请在安装前先创建 PostgreSQL 数据库服务
+  database:
+    image: postgres:17
+    container_name: ${CONTAINER_NAME}-database
+    restart: unless-stopped
+    networks:
+      - 1panel-network
+    environment:
+      - POSTGRES_USER=${TM_DB_USER}
+      - POSTGRES_PASSWORD=${TM_DB_PASS}
+      - POSTGRES_DB=${TM_DB_NAME}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    labels:
+      createdBy: "Apps"
 
   mosquitto:
     image: eclipse-mosquitto:2

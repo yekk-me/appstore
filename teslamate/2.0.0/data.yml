@@ -1,15 +1,6 @@
 additionalProperties:
   formFields:
-    # 数据库配置
-    - default: ""
-      envKey: PANEL_DB_HOST
-      key: postgresql
-      label:
-        en: Database Service
-        zh: 数据库服务
-        zh-Hant: 資料庫服務
-      required: true
-      type: service
+    # 数据库配置（使用内置 PostgreSQL）
     - default: teslamate
       envKey: TM_DB_NAME
       label:
