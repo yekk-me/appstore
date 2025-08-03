@@ -2,7 +2,7 @@ version: "3"
 
 services:
   teslamate:
-    image: docker.1ms.run/teslamate/teslamate:2.0.0
+    image: docker.1ms.run/gococonut/teslamate
     container_name: ${CONTAINER_NAME}
     restart: unless-stopped
     networks:
@@ -26,7 +26,7 @@ services:
       createdBy: "Apps"
 
   grafana:
-    image: docker.1ms.run/teslamate/grafana:2.0.0
+    image: docker.1ms.run/gococonut/grafana
     container_name: ${CONTAINER_NAME}-grafana
     restart: unless-stopped
     networks:
