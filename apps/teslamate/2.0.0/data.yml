@@ -33,7 +33,7 @@ additionalProperties:
       type: password
 
     # TeslaMate 配置
-    - default: ""
+    - default: "secret"
       envKey: TM_ENCRYPTION_KEY
       label:
         en: Encryption Key
@@ -74,7 +74,7 @@ additionalProperties:
         zh: Grafana 管理员用户
         zh-Hant: Grafana 管理員用戶
       required: true
-      rule: paramComplexity
+      rule: paramCommon
       type: text
     - default: admin
       envKey: GRAFANA_PW
