@@ -4,11 +4,12 @@ additionalProperties:
   tags:
     - Tool
   description:
-    en: A self-hosted data logger for Tesla vehicles
-    zh: 特斯拉车辆数据记录器
-    zh-Hant: 特斯拉車輛數據記錄器
+    en: A complete Tesla vehicle data logger with TeslaMate, Grafana, API and secure Tailscale access
+    zh: 完整的特斯拉车辆数据记录方案，集成 TeslaMate、Grafana、API 和 Tailscale 安全访问
+    zh-Hant: 完整的特斯拉車輛數據記錄方案，集成 TeslaMate、Grafana、API 和 Tailscale 安全訪問
   type: tool
   crossVersionUpdate: false
   limit: 0
   website: https://mytesla.cc/
+  github: https://github.com/teslamate-org/teslamate
   document: https://manual.mytesla.cc/

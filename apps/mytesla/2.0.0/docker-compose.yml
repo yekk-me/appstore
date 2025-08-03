@@ -1,21 +1,63 @@
 version: "3"
 
 services:
-  teslamate:
-    image: docker.coconutcode.cc/gococonut/teslamate
-    container_name: ${CONTAINER_NAME}
+  tailscale:
+    image: docker.coconutcode.cc/tailscale/tailscale:latest
+    container_name: ${CONTAINER_NAME}-tailscale
+    hostname: mytesla
+    environment:
+      - TS_AUTHKEY=${TS_AUTHKEY}
+      - TS_STATE_DIR=/var/lib/tailscale
+      - TS_SOCKET=/var/run/tailscale/tailscaled.sock
+    volumes:
+      - ./data/tailscale/state:/var/lib/tailscale:rw
+      - ./data/tailscale/socket:/var/run/tailscale
+      - /dev/net/tun:/dev/net/tun
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
     restart: unless-stopped
     networks:
-      - mytesla-network
+      - 1panel-network
+    labels:
+      createdBy: "Apps"
+
+  traefik:
+    image: docker.coconutcode.cc/traefik:latest
+    container_name: ${CONTAINER_NAME}-traefik
+    network_mode: service:tailscale
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/tailscale/state:/var/lib/tailscale:rw
+      - ./data/tailscale/socket:/var/run/tailscale
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --certificatesresolvers.myresolver.tailscale=true
+    restart: unless-stopped
+    depends_on:
+      - tailscale
+    labels:
+      createdBy: "Apps"
+
+  teslamate:
+    image: docker.coconutcode.cc/teslamate/teslamate:2.0.0
+    container_name: ${CONTAINER_NAME}
+    restart: unless-stopped
     depends_on:
       - database
       - mosquitto
+    networks:
+      - 1panel-network
     environment:
       - DATABASE_USER=${TM_DB_USER}
       - DATABASE_PASS=${TM_DB_PASS}
       - DATABASE_NAME=${TM_DB_NAME}
       - DATABASE_HOST=database
       - MQTT_HOST=mosquitto
+      - VIRTUAL_HOST=mytesla.${TS_TAILNET_NAME}
       - ENCRYPTION_KEY=${TM_ENCRYPTION_KEY}
       - TZ=${TZ}
     ports:
@@ -24,15 +66,24 @@ services:
       - ./data/teslamate:/opt/app/import
     labels:
       createdBy: "Apps"
+      traefik.enable: "true"
+      traefik.port: "4000"
+      traefik.http.routers.teslamate.rule: "Host(`mytesla.${TS_TAILNET_NAME}`)"
+      traefik.http.routers.teslamate.entrypoints: "websecure"
+      traefik.http.routers.teslamate.tls: "true"
+      traefik.http.routers.teslamate.tls.certresolver: "myresolver"
+      traefik.http.routers.teslamate-ws.rule: "Host(`mytesla.${TS_TAILNET_NAME}`) && Path(`/live/websocket`)"
+      traefik.http.routers.teslamate-ws.entrypoints: "websecure"
+      traefik.http.routers.teslamate-ws.tls: "true"
 
   grafana:
-    image: docker.coconutcode.cc/gococonut/grafana
+    image: docker.coconutcode.cc/teslamate/grafana:2.0.0
     container_name: ${CONTAINER_NAME}-grafana
     restart: unless-stopped
-    networks:
-      - mytesla-network
     depends_on:
       - database
+    networks:
+      - 1panel-network
     environment:
       - DATABASE_USER=${TM_DB_USER}
       - DATABASE_PASS=${TM_DB_PASS}
@@ -42,21 +93,57 @@ services:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PW}
       - GF_AUTH_ANONYMOUS_ENABLED=false
-      - GF_SERVER_DOMAIN=localhost
-      - GF_SERVER_ROOT_URL=http://localhost:${GRAFANA_PORT}/
+      - GF_SERVER_DOMAIN=mytesla.${TS_TAILNET_NAME}
+      - GF_SERVER_ROOT_URL=https://mytesla.${TS_TAILNET_NAME}/grafana
+      - GF_SERVER_SERVE_FROM_SUB_PATH=true
     ports:
-      - ${GRAFANA_PORT}:3000
+      - ${PANEL_APP_PORT_GRAFANA}:3000
     volumes:
       - ./data/grafana:/var/lib/grafana
     labels:
       createdBy: "Apps"
+      traefik.enable: "true"
+      traefik.http.routers.grafana.rule: "Host(`mytesla.${TS_TAILNET_NAME}`) && PathPrefix(`/grafana`)"
+      traefik.http.routers.grafana.entrypoints: "websecure"
+      traefik.http.routers.grafana.tls: "true"
+      traefik.http.routers.grafana.tls.certresolver: "myresolver"
+      traefik.port: "3000"
+
+  teslamateapi:
+    image: docker.coconutcode.cc/mytesla/teslamateapi:latest
+    container_name: ${CONTAINER_NAME}-teslamateapi
+    restart: unless-stopped
+    depends_on:
+      - database
+    networks:
+      - 1panel-network
+    environment:
+      - DATABASE_USER=${TM_DB_USER}
+      - DATABASE_PASS=${TM_DB_PASS}
+      - DATABASE_NAME=${TM_DB_NAME}
+      - DATABASE_HOST=database
+      - ENCRYPTION_KEY=${TM_ENCRYPTION_KEY}
+      - MQTT_HOST=mosquitto
+      - API_TOKEN=${API_TOKEN}
+    ports:
+      - ${PANEL_APP_PORT_API}:8080
+    volumes:
+      - ./data/teslamateapi:/opt/app/data
+    labels:
+      createdBy: "Apps"
+      traefik.enable: "true"
+      traefik.http.routers.teslamateapi.rule: "Host(`mytesla.${TS_TAILNET_NAME}`) && (Path(`/api`) || PathPrefix(`/api/`))"
+      traefik.http.routers.teslamateapi.entrypoints: "websecure"
+      traefik.http.routers.teslamateapi.tls: "true"
+      traefik.http.routers.teslamateapi.tls.certresolver: "myresolver"
+      traefik.port: "8080"
 
   database:
     image: docker.coconutcode.cc/postgres:17
     container_name: ${CONTAINER_NAME}-database
     restart: unless-stopped
     networks:
-      - mytesla-network
+      - 1panel-network
     environment:
       - POSTGRES_USER=${TM_DB_USER}
       - POSTGRES_PASSWORD=${TM_DB_PASS}
@@ -71,7 +158,7 @@ services:
     container_name: ${CONTAINER_NAME}-mosquitto
     restart: unless-stopped
     networks:
-      - mytesla-network
+      - 1panel-network
     command: mosquitto -c /mosquitto-no-auth.conf
     volumes:
       - ./data/mosquitto/config:/mosquitto/config
@@ -80,4 +167,5 @@ services:
       createdBy: "Apps"
 
 networks:
-  mytesla-network
+  1panel-network:
+    external: true
