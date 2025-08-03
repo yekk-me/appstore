@@ -2,7 +2,7 @@ version: "3"
 
 services:
   teslamate:
-    image: docker.1ms.run/gococonut/teslamate
+    image: docker.coconutcode.cc/gococonut/teslamate
     container_name: ${CONTAINER_NAME}
     restart: unless-stopped
     networks:
@@ -26,7 +26,7 @@ services:
       createdBy: "Apps"
 
   grafana:
-    image: docker.1ms.run/gococonut/grafana
+    image: docker.coconutcode.cc/gococonut/grafana
     container_name: ${CONTAINER_NAME}-grafana
     restart: unless-stopped
     networks:
@@ -52,7 +52,7 @@ services:
       createdBy: "Apps"
 
   database:
-    image: docker.1ms.run/postgres:17
+    image: docker.coconutcode.cc/postgres:17
     container_name: ${CONTAINER_NAME}-database
     restart: unless-stopped
     networks:
@@ -67,7 +67,7 @@ services:
       createdBy: "Apps"
 
   mosquitto:
-    image: docker.1ms.run/eclipse-mosquitto:2
+    image: docker.coconutcode.cc/eclipse-mosquitto:2
     container_name: ${CONTAINER_NAME}-mosquitto
     restart: unless-stopped
     networks:
