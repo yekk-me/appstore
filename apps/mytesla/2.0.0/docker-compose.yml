@@ -2,7 +2,7 @@ version: "3"
 
 services:
   tailscale:
-    image: tailscale/tailscale:latest
+    image: docker.coconutcode.cc/tailscale/tailscale:v1.86.2
     container_name: ${CONTAINER_NAME}-tailscale
     hostname: mytesla
     environment:
@@ -18,10 +18,10 @@ services:
       - SYS_MODULE
     restart: unless-stopped
     labels:
-      createdBy: "Apps"
+      - "createdBy=Apps"
 
   traefik:
-    image: traefik:latest
+    image: docker.coconutcode.cc/traefik:v3.5.0
     container_name: ${CONTAINER_NAME}-traefik
     network_mode: service:tailscale
     volumes:
@@ -38,10 +38,10 @@ services:
     depends_on:
       - tailscale
     labels:
-      createdBy: "Apps"
+      - "createdBy=Apps"
 
   teslamate:
-    image: teslamate/teslamate:2.0.0
+    image: docker.coconutcode.cc/gococonut/teslamate
     container_name: ${CONTAINER_NAME}
     restart: unless-stopped
     networks:
@@ -63,7 +63,7 @@ services:
     volumes:
       - ./data/teslamate:/opt/app/import
     labels:
-      createdBy: "Apps"
+      - "createdBy=Apps"
       - "traefik.enable=true"
       - "traefik.port=4000"
       - "traefik.http.routers.teslamate.rule=Host(`mytesla.${TS_TAILNET_NAME}`)"
@@ -75,7 +75,7 @@ services:
       - "traefik.http.routers.teslamate-ws.tls="
 
   grafana:
-    image: teslamate/grafana:2.0.0
+    image: docker.coconutcode.cc/gococonut/grafana
     container_name: ${CONTAINER_NAME}-grafana
     restart: unless-stopped
     networks:
@@ -99,7 +99,7 @@ services:
     volumes:
       - ./data/grafana:/var/lib/grafana
     labels:
-      createdBy: "Apps"
+      - "createdBy=Apps"
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`mytesla.${TS_TAILNET_NAME}`) && PathPrefix(`/grafana`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
@@ -108,7 +108,7 @@ services:
       - "traefik.port=3000"
 
   teslamateapi:
-    image: mytesla/teslamateapi:latest
+    image: docker.coconutcode.cc/mytesla/teslamateapi:latest
     container_name: ${CONTAINER_NAME}-teslamateapi
     restart: unless-stopped
     networks:
@@ -128,7 +128,7 @@ services:
     ports:
       - ${API_PORT}:8080
     labels:
-      createdBy: "Apps"
+      - "createdBy=Apps"
       - "traefik.enable=true"
       - "traefik.http.routers.teslamateapi.rule=Host(`mytesla.${TS_TAILNET_NAME}`) && (Path(`/api`) || PathPrefix(`/api/`))"
       - "traefik.http.routers.teslamateapi.entrypoints=websecure"
@@ -137,7 +137,7 @@ services:
       - "traefik.port=8080"
 
   database:
-    image: postgres:17
+    image: docker.coconutcode.cc/postgres:17
     container_name: ${CONTAINER_NAME}-database
     restart: unless-stopped
     networks:
@@ -149,10 +149,10 @@ services:
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
     labels:
-      createdBy: "Apps"
+      - "createdBy=Apps"
 
   mosquitto:
-    image: eclipse-mosquitto:2
+    image: docker.coconutcode.cc/eclipse-mosquitto:2
     container_name: ${CONTAINER_NAME}-mosquitto
     restart: unless-stopped
     networks:
@@ -162,7 +162,7 @@ services:
       - ./data/mosquitto/config:/mosquitto/config
       - ./data/mosquitto/data:/mosquitto/data
     labels:
-      createdBy: "Apps"
+      - "createdBy=Apps"
 
 networks:
   1panel-network:
