@@ -43,6 +43,36 @@ additionalProperties:
       required: true
       rule: paramComplexity
       type: password
+      
+    # API Token 配置
+    - default: ""
+      envKey: API_TOKEN
+      label:
+        en: API Token (for TeslaMateAPI)
+        zh: API 令牌 (用于 TeslaMateAPI)
+        zh-Hant: API 令牌 (用於 TeslaMateAPI)
+      random: true
+      required: false
+      rule: paramComplexity
+      type: password
+
+    # Tailscale 配置
+    - default: ""
+      envKey: TS_AUTHKEY
+      label:
+        en: Tailscale Auth Key
+        zh: Tailscale 认证密钥
+        zh-Hant: Tailscale 認證密鑰
+      required: true
+      type: text
+    - default: ""
+      envKey: TS_TAILNET_NAME
+      label:
+        en: Tailscale Tailnet Name (e.g., your-name.ts.net)
+        zh: Tailscale Tailnet 名称 (例如: your-name.ts.net)
+        zh-Hant: Tailscale Tailnet 名稱 (例如: your-name.ts.net)
+      required: true
+      type: text
 
     # 端口配置
     - default: 4000
@@ -57,11 +87,21 @@ additionalProperties:
       type: number
     - default: 3000
       edit: true
-      envKey: GRAFANA_PORT
+      envKey: PANEL_APP_PORT_GRAFANA
       label:
         en: Grafana Port
         zh: Grafana 端口
         zh-Hant: Grafana 埠
+      required: true
+      rule: paramPort
+      type: number
+    - default: 8080
+      edit: true
+      envKey: PANEL_APP_PORT_API
+      label:
+        en: TeslaMateAPI Port
+        zh: TeslaMateAPI 端口
+        zh-Hant: TeslaMateAPI 埠
       required: true
       rule: paramPort
       type: number
