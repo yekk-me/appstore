@@ -9,7 +9,7 @@ additionalProperties:
         zh-Hant: 資料庫名稱
       random: true
       required: true
-      rule: paramCommon
+      rule: paramComplexity
       type: text
     - default: teslamate
       envKey: TM_DB_USER
@@ -19,7 +19,7 @@ additionalProperties:
         zh-Hant: 資料庫使用者
       random: true
       required: true
-      rule: paramCommon
+      rule: paramComplexity
       type: text
     - default: teslamate
       envKey: TM_DB_PASS
@@ -31,7 +31,7 @@ additionalProperties:
       required: true
       rule: paramComplexity
       type: password
-    
+
     # TeslaMate 配置
     - default: ""
       envKey: TM_ENCRYPTION_KEY
@@ -43,7 +43,7 @@ additionalProperties:
       required: true
       rule: paramComplexity
       type: password
-    
+
     # 端口配置
     - default: 4000
       edit: true
@@ -65,7 +65,7 @@ additionalProperties:
       required: true
       rule: paramPort
       type: number
-    
+
     # Grafana 配置
     - default: admin
       envKey: GRAFANA_USER
@@ -74,7 +74,7 @@ additionalProperties:
         zh: Grafana 管理员用户
         zh-Hant: Grafana 管理員用戶
       required: true
-      rule: paramCommon
+      rule: paramComplexity
       type: text
     - default: admin
       envKey: GRAFANA_PW
@@ -86,7 +86,7 @@ additionalProperties:
       required: true
       rule: paramComplexity
       type: password
-    
+
     # 时区配置
     - default: Asia/Shanghai
       envKey: TZ

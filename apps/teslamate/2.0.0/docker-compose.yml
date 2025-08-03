@@ -2,11 +2,11 @@ version: "3"
 
 services:
   teslamate:
-    image: teslamate/teslamate:2.0.0
+    image: docker.1ms.run/teslamate/teslamate:2.0.0
     container_name: ${CONTAINER_NAME}
     restart: unless-stopped
     networks:
-      - 1panel-network
+      - mytesla-network
     depends_on:
       - database
       - mosquitto
@@ -26,11 +26,11 @@ services:
       createdBy: "Apps"
 
   grafana:
-    image: teslamate/grafana:2.0.0
+    image: docker.1ms.run/teslamate/grafana:2.0.0
     container_name: ${CONTAINER_NAME}-grafana
     restart: unless-stopped
     networks:
-      - 1panel-network
+      - mytesla-network
     depends_on:
       - database
     environment:
@@ -52,11 +52,11 @@ services:
       createdBy: "Apps"
 
   database:
-    image: postgres:17
+    image: docker.1ms.run/postgres:17
     container_name: ${CONTAINER_NAME}-database
     restart: unless-stopped
     networks:
-      - 1panel-network
+      - mytesla-network
     environment:
       - POSTGRES_USER=${TM_DB_USER}
       - POSTGRES_PASSWORD=${TM_DB_PASS}
@@ -67,11 +67,11 @@ services:
       createdBy: "Apps"
 
   mosquitto:
-    image: eclipse-mosquitto:2
+    image: docker.1ms.run/eclipse-mosquitto:2
     container_name: ${CONTAINER_NAME}-mosquitto
     restart: unless-stopped
     networks:
-      - 1panel-network
+      - mytesla-network
     command: mosquitto -c /mosquitto-no-auth.conf
     volumes:
       - ./data/mosquitto/config:/mosquitto/config
@@ -80,5 +80,4 @@ services:
       createdBy: "Apps"
 
 networks:
-  1panel-network:
-    external: true
+  mytesla-network

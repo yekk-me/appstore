@@ -1,6 +1,6 @@
 additionalProperties:
-  key: teslamate
-  name: TeslaMate
+  key: mytesla
+  name: Mytesla
   tags:
     - Tool
   description:
@@ -8,8 +8,7 @@ additionalProperties:
     zh: 特斯拉车辆数据记录器
     zh-Hant: 特斯拉車輛數據記錄器
   type: tool
-  crossVersionUpdate: true
+  crossVersionUpdate: false
   limit: 0
-  website: https://docs.teslamate.org/
-  github: https://github.com/teslamate-org/teslamate
-  document: https://docs.teslamate.org/
+  website: https://mytesla.cc/
+  document: https://manual.mytesla.cc/
