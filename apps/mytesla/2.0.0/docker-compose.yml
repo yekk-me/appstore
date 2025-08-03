@@ -17,8 +17,6 @@ services:
       - NET_ADMIN
       - SYS_MODULE
     restart: unless-stopped
-    labels:
-      - "createdBy=Apps"
 
   traefik:
     image: docker.coconutcode.cc/traefik:v3.5.0
@@ -37,15 +35,11 @@ services:
     restart: unless-stopped
     depends_on:
       - tailscale
-    labels:
-      - "createdBy=Apps"
 
   teslamate:
     image: docker.coconutcode.cc/gococonut/teslamate
     container_name: ${CONTAINER_NAME}
     restart: unless-stopped
-    networks:
-      - 1panel-network
     depends_on:
       - database
       - mosquitto
@@ -63,7 +57,6 @@ services:
     volumes:
       - ./data/teslamate:/opt/app/import
     labels:
-      - "createdBy=Apps"
       - "traefik.enable=true"
       - "traefik.port=4000"
       - "traefik.http.routers.teslamate.rule=Host(`mytesla.${TS_TAILNET_NAME}`)"
@@ -78,8 +71,6 @@ services:
     image: docker.coconutcode.cc/gococonut/grafana
     container_name: ${CONTAINER_NAME}-grafana
     restart: unless-stopped
-    networks:
-      - 1panel-network
     depends_on:
       - database
     environment:
@@ -99,7 +90,6 @@ services:
     volumes:
       - ./data/grafana:/var/lib/grafana
     labels:
-      - "createdBy=Apps"
       - "traefik.enable=true"
       - "traefik.http.routers.grafana.rule=Host(`mytesla.${TS_TAILNET_NAME}`) && PathPrefix(`/grafana`)"
       - "traefik.http.routers.grafana.entrypoints=websecure"
@@ -111,8 +101,6 @@ services:
     image: docker.coconutcode.cc/mytesla/teslamateapi:latest
     container_name: ${CONTAINER_NAME}-teslamateapi
     restart: unless-stopped
-    networks:
-      - 1panel-network
     depends_on:
       - database
     environment:
@@ -128,7 +116,6 @@ services:
     ports:
       - ${API_PORT}:8080
     labels:
-      - "createdBy=Apps"
       - "traefik.enable=true"
       - "traefik.http.routers.teslamateapi.rule=Host(`mytesla.${TS_TAILNET_NAME}`) && (Path(`/api`) || PathPrefix(`/api/`))"
       - "traefik.http.routers.teslamateapi.entrypoints=websecure"
@@ -140,30 +127,18 @@ services:
     image: docker.coconutcode.cc/postgres:17
     container_name: ${CONTAINER_NAME}-database
     restart: unless-stopped
-    networks:
-      - 1panel-network
     environment:
       - POSTGRES_USER=${TM_DB_USER}
       - POSTGRES_PASSWORD=${TM_DB_PASS}
       - POSTGRES_DB=${TM_DB_NAME}
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
-    labels:
-      - "createdBy=Apps"
 
   mosquitto:
     image: docker.coconutcode.cc/eclipse-mosquitto:2
     container_name: ${CONTAINER_NAME}-mosquitto
     restart: unless-stopped
-    networks:
-      - 1panel-network
     command: mosquitto -c /mosquitto-no-auth.conf
     volumes:
       - ./data/mosquitto/config:/mosquitto/config
       - ./data/mosquitto/data:/mosquitto/data
-    labels:
-      - "createdBy=Apps"
-
-networks:
-  1panel-network:
-    external: true
