@@ -1,5 +1,37 @@
 additionalProperties:
   formFields:
+    # Tailscale 配置
+    - default: ""
+      envKey: TS_AUTHKEY
+      label:
+        en: Tailscale Auth Key
+        zh: Tailscale 认证密钥
+        zh-Hant: Tailscale 認證密鑰
+      required: true
+      rule: paramCommon
+      type: password
+    - default: ""
+      envKey: TS_TAILNET_NAME
+      label:
+        en: Tailscale Tailnet Name (e.g. your-name.ts.net)
+        zh: Tailscale Tailnet 名称 (例如 your-name.ts.net)
+        zh-Hant: Tailscale Tailnet 名稱 (例如 your-name.ts.net)
+      required: true
+      rule: paramCommon
+      type: text
+
+    # TeslaMateAPI 配置
+    - default: ""
+      envKey: API_TOKEN
+      label:
+        en: API Token (for TeslaMateAPI security)
+        zh: API 令牌 (用于 TeslaMateAPI 安全)
+        zh-Hant: API 令牌 (用於 TeslaMateAPI 安全)
+      random: true
+      required: true
+      rule: paramComplexity
+      type: password
+
     # 数据库配置（使用内置 PostgreSQL）
     - default: teslamate
       envKey: TM_DB_NAME
@@ -62,6 +94,16 @@ additionalProperties:
         en: Grafana Port
         zh: Grafana 端口
         zh-Hant: Grafana 埠
+      required: true
+      rule: paramPort
+      type: number
+    - default: 8080
+      edit: true
+      envKey: API_PORT
+      label:
+        en: TeslaMateAPI Port
+        zh: TeslaMateAPI 端口
+        zh-Hant: TeslaMateAPI 埠
       required: true
       rule: paramPort
       type: number
