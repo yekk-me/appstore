@@ -10,7 +10,7 @@ mkdir -p ./data/mosquitto/config
 mkdir -p ./data/mosquitto/data
 mkdir -p ./data/teslamateapi
 mkdir -p ./data/auth
-mkdir -p ./data/cloudflared
+mkdir -p ./data/acme
 
 # --- 设置目录权限 ---
 echo "正在设置目录权限..."

@@ -19,6 +19,7 @@ additionalProperties:
         zh: Let's Encrypt 邮箱 (用于 SSL 证书)
         zh-Hant: Let's Encrypt 郵箱 (用於 SSL 證書)
       required: true
+      type: text
 
     - default: "admin"
       envKey: BASIC_AUTH_USER

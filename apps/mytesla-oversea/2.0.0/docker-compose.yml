@@ -43,6 +43,7 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./data/auth:/auth
+      - ./data/acme:/etc/acme
     labels:
       - "traefik.enable=true"
     depends_on:
