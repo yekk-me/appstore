@@ -42,16 +42,10 @@ Mytesla 是一个功能强大的特斯拉车辆数据自托管记录器，集成
    - 点击 "Create a tunnel" 创建新的隧道
    - 记录生成的 Tunnel Token
 
-3. **配置域名**
-   - 在 Tunnel 配置中添加 Public Hostname
-   - 设置您希望使用的域名 (例如: `mytesla.example.com`)
-   - Service 设置为 `http://traefik:80`
-   
-   或者使用我们提供的配置助手脚本：
-   ```bash
-   cd apps/mytesla/2.0.0
-   ./setup-tunnel-domain.sh
-   ```
+3. **配置域名**（自动配置）
+   - 在安装应用时填入您的域名（例如: `mytesla.example.com`）
+   - 系统会自动配置 Tunnel 将域名指向内部的 Traefik 服务
+   - 无需手动在 Cloudflare Dashboard 中配置 Public Hostname
 
 ### 2. 安装应用
 
