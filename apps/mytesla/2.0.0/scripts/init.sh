@@ -59,11 +59,6 @@ ingress:
   # 主域名路由到 Traefik
   - hostname: $CLOUDFLARE_DOMAIN
     service: http://traefik:80
-    originRequest:
-      # 不验证 SSL（内部服务）
-      noTLSVerify: true
-      # 保持原始主机头
-      httpHostHeader: $CLOUDFLARE_DOMAIN
   
   # 404 规则（必须在最后）
   - service: http_status:404
