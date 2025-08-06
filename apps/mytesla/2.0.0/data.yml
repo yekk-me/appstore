@@ -1,27 +1,18 @@
 additionalProperties:
   formFields:
-    # Cloudflare 配置
     - default: ""
       envKey: CLOUDFLARE_TUNNEL_TOKEN
+      edit: true
       label:
         en: Cloudflare Tunnel Token
         zh: Cloudflare Tunnel 令牌
         zh-Hant: Cloudflare Tunnel 令牌
       required: true
       type: password
-    - default: ""
-      envKey: CLOUDFLARE_DOMAIN
-      label:
-        en: Domain (e.g. mytesla.example.com)
-        zh: 域名 (例如 mytesla.example.com)
-        zh-Hant: 域名 (例如 mytesla.example.com)
-      required: true
-      rule: paramCommon
-      type: text
 
-    # Basic Auth 配置
     - default: "admin"
       envKey: BASIC_AUTH_USER
+      edit: true
       label:
         en: TeslaMate Username
         zh: TeslaMate 用户名
@@ -29,8 +20,10 @@ additionalProperties:
       required: true
       rule: paramCommon
       type: text
+
     - default: "admin"
       envKey: BASIC_AUTH_PASS
+      edit: true
       label:
         en: TeslaMate Password
         zh: TeslaMate 密码
@@ -40,9 +33,9 @@ additionalProperties:
       rule: paramComplexity
       type: password
 
-    # TeslaMateAPI 配置
     - default: "api_token"
       envKey: API_TOKEN
+      edit: true
       label:
         en: API Token (for TeslaMateAPI security)
         zh: API 令牌 (用于 TeslaMateAPI 安全)
@@ -52,7 +45,6 @@ additionalProperties:
       rule: paramComplexity
       type: password
 
-    # 数据库配置（使用内置 PostgreSQL）
     - default: teslamate
       envKey: TM_DB_NAME
       label:
@@ -61,8 +53,8 @@ additionalProperties:
         zh-Hant: 資料庫名稱
       random: true
       required: true
-      rule: paramComplexity
       type: text
+
     - default: teslamate
       envKey: TM_DB_USER
       label:
@@ -73,6 +65,7 @@ additionalProperties:
       required: true
       rule: paramComplexity
       type: text
+
     - default: teslamate
       envKey: TM_DB_PASS
       label:
@@ -84,7 +77,6 @@ additionalProperties:
       rule: paramComplexity
       type: password
 
-    # TeslaMate 配置
     - default: "secret"
       envKey: TM_ENCRYPTION_KEY
       label:
@@ -96,19 +88,6 @@ additionalProperties:
       rule: paramComplexity
       type: password
 
-    # 端口配置
-    - default: 80
-      edit: true
-      envKey: TRAEFIK_HTTP_PORT
-      label:
-        en: Traefik HTTP Port
-        zh: Traefik HTTP 端口
-        zh-Hant: Traefik HTTP 埠
-      required: true
-      rule: paramPort
-      type: number
-
-    # Grafana 配置
     - default: admin
       envKey: GRAFANA_USER
       label:
@@ -129,7 +108,6 @@ additionalProperties:
       rule: paramComplexity
       type: password
 
-    # 时区配置
     - default: Asia/Shanghai
       envKey: TZ
       label:

@@ -3,12 +3,10 @@ version: "3"
 services:
   # Cloudflare Tunnel for internal network penetration
   cloudflared:
-    image: cloudflare/cloudflared:latest
+    image: docker.coconutcode.cc/cloudflare/cloudflared:latest
     container_name: ${CONTAINER_NAME}-cloudflared
     restart: unless-stopped
-    command: tunnel --config /etc/cloudflared/config.yml run
-    volumes:
-      - ./data/cloudflared/config.yml:/etc/cloudflared/config.yml:ro
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       - traefik
 
