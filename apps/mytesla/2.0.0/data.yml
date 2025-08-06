@@ -1,24 +1,45 @@
 additionalProperties:
   formFields:
-    # Tailscale 配置
+    # Cloudflare 配置
     - default: ""
-      envKey: TS_AUTHKEY
+      envKey: CLOUDFLARE_TUNNEL_TOKEN
       label:
-        en: Tailscale Auth Key
-        zh: Tailscale 认证密钥
-        zh-Hant: Tailscale 認證密鑰
+        en: Cloudflare Tunnel Token
+        zh: Cloudflare Tunnel 令牌
+        zh-Hant: Cloudflare Tunnel 令牌
       required: true
       rule: paramCommon
       type: password
     - default: ""
-      envKey: TS_TAILNET_NAME
+      envKey: CLOUDFLARE_DOMAIN
       label:
-        en: Tailscale Tailnet Name (e.g. your-name.ts.net)
-        zh: Tailscale Tailnet 名称 (例如 your-name.ts.net)
-        zh-Hant: Tailscale Tailnet 名稱 (例如 your-name.ts.net)
+        en: Domain (e.g. mytesla.example.com)
+        zh: 域名 (例如 mytesla.example.com)
+        zh-Hant: 域名 (例如 mytesla.example.com)
       required: true
       rule: paramCommon
       type: text
+
+    # Basic Auth 配置
+    - default: "admin"
+      envKey: BASIC_AUTH_USER
+      label:
+        en: Basic Auth Username
+        zh: Basic Auth 用户名
+        zh-Hant: Basic Auth 用戶名
+      required: true
+      rule: paramCommon
+      type: text
+    - default: ""
+      envKey: BASIC_AUTH_PASS
+      label:
+        en: Basic Auth Password
+        zh: Basic Auth 密码
+        zh-Hant: Basic Auth 密碼
+      random: true
+      required: true
+      rule: paramComplexity
+      type: password
 
     # TeslaMateAPI 配置
     - default: ""
@@ -77,33 +98,13 @@ additionalProperties:
       type: password
 
     # 端口配置
-    - default: 4000
+    - default: 80
       edit: true
-      envKey: PANEL_APP_PORT_HTTP
+      envKey: TRAEFIK_HTTP_PORT
       label:
-        en: TeslaMate Port
-        zh: TeslaMate 端口
-        zh-Hant: TeslaMate 埠
-      required: true
-      rule: paramPort
-      type: number
-    - default: 3000
-      edit: true
-      envKey: GRAFANA_PORT
-      label:
-        en: Grafana Port
-        zh: Grafana 端口
-        zh-Hant: Grafana 埠
-      required: true
-      rule: paramPort
-      type: number
-    - default: 8080
-      edit: true
-      envKey: API_PORT
-      label:
-        en: TeslaMateAPI Port
-        zh: TeslaMateAPI 端口
-        zh-Hant: TeslaMateAPI 埠
+        en: Traefik HTTP Port
+        zh: Traefik HTTP 端口
+        zh-Hant: Traefik HTTP 埠
       required: true
       rule: paramPort
       type: number
