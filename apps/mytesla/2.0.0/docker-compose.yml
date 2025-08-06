@@ -10,6 +10,27 @@ services:
     depends_on:
       - traefik
 
+  auth-generator:
+    image: docker.coconutcode.cc/httpd:2.4
+    container_name: ${CONTAINER_NAME}-auth-generator
+    restart: "unless-stopped"
+    volumes:
+      - ./data/auth:/auth
+    environment:
+      - BASIC_AUTH_USER=${BASIC_AUTH_USER}
+      - BASIC_AUTH_PASS=${BASIC_AUTH_PASS}
+    command: >
+      sh -c '
+        if [ -n "$$BASIC_AUTH_USER" ] && [ -n "$$BASIC_AUTH_PASS" ]; then
+          htpasswd -cb /auth/.htpasswd $$BASIC_AUTH_USER $$BASIC_AUTH_PASS;
+          echo "Basic Auth file created/updated.";
+        else
+          echo "Warning: BASIC_AUTH_USER or BASIC_AUTH_PASS not set. Skipping .htpasswd creation.";
+        fi
+        echo "Initialization complete. Staying alive for the panel...";
+        tail -f /dev/null
+      '
+
   # Traefik as unified gateway
   traefik:
     image: docker.coconutcode.cc/traefik:v3.5.0
@@ -28,6 +49,8 @@ services:
       - ./data/auth:/auth
     labels:
       - "traefik.enable=true"
+    depends_on:
+      - auth-generator
 
   teslamate:
     image: docker.coconutcode.cc/gococonut/teslamate
@@ -77,6 +100,7 @@ services:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PW}
       - GF_AUTH_ANONYMOUS_ENABLED=false
+      - GF_USERS_DEFAULT_LANGUAGE=zh-CN
       - GF_SERVER_DOMAIN=${CLOUDFLARE_DOMAIN}
       - GF_SERVER_ROOT_URL=https://${CLOUDFLARE_DOMAIN}/grafana
       - GF_SERVER_SERVE_FROM_SUB_PATH=true
@@ -109,9 +133,6 @@ services:
       - "traefik.http.services.teslamateapi.loadbalancer.server.port=8080"
       - "traefik.http.routers.teslamateapi.rule=Host(`${CLOUDFLARE_DOMAIN}`) && PathPrefix(`/api`)"
       - "traefik.http.routers.teslamateapi.entrypoints=web"
-      # Strip /api prefix if needed
-      - "traefik.http.middlewares.teslamateapi-stripprefix.stripprefix.prefixes=/api"
-      - "traefik.http.routers.teslamateapi.middlewares=teslamateapi-stripprefix"
 
   database:
     image: docker.coconutcode.cc/postgres:17

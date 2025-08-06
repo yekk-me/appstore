@@ -10,6 +10,17 @@ additionalProperties:
       required: true
       type: password
 
+    - default: ""
+      envKey: CLOUDFLARE_DOMAIN
+      edit: true
+      label:
+        en: Domain (e.g. mytesla.example.com)
+        zh: 域名 (例如 mytesla.example.com)
+        zh-Hant: 域名 (例如 mytesla.example.com)
+      required: true
+      rule: paramCommon
+      type: text
+
     - default: "admin"
       envKey: BASIC_AUTH_USER
       edit: true
