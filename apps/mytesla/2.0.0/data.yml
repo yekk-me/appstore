@@ -8,7 +8,6 @@ additionalProperties:
         zh: Cloudflare Tunnel 令牌
         zh-Hant: Cloudflare Tunnel 令牌
       required: true
-      rule: paramCommon
       type: password
     - default: ""
       envKey: CLOUDFLARE_DOMAIN
@@ -24,25 +23,25 @@ additionalProperties:
     - default: "admin"
       envKey: BASIC_AUTH_USER
       label:
-        en: Basic Auth Username
-        zh: Basic Auth 用户名
-        zh-Hant: Basic Auth 用戶名
+        en: TeslaMate Username
+        zh: TeslaMate 用户名
+        zh-Hant: TeslaMate 用戶名
       required: true
       rule: paramCommon
       type: text
-    - default: ""
+    - default: "admin"
       envKey: BASIC_AUTH_PASS
       label:
-        en: Basic Auth Password
-        zh: Basic Auth 密码
-        zh-Hant: Basic Auth 密碼
+        en: TeslaMate Password
+        zh: TeslaMate 密码
+        zh-Hant: TeslaMate 密碼
       random: true
       required: true
       rule: paramComplexity
       type: password
 
     # TeslaMateAPI 配置
-    - default: ""
+    - default: "api_token"
       envKey: API_TOKEN
       label:
         en: API Token (for TeslaMateAPI security)
