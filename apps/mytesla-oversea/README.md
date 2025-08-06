@@ -1,6 +1,6 @@
-# Mytesla
+# Mytesla Oversea
 
-Mytesla 是一个功能强大的特斯拉车辆数据自托管记录器，集成了 TeslaMate、Grafana 数据可视化和 TeslaMateAPI，支持通过 Cloudflare Tunnel 进行安全的内网穿透访问。
+Mytesla Oversea 是一个功能强大的特斯拉车辆数据自托管记录器，集成了 TeslaMate、Grafana 数据可视化和 TeslaMateAPI， 适合有海外服务器公网IP的朋友使用。
 
 ## 功能特性
 
@@ -10,7 +10,7 @@ Mytesla 是一个功能强大的特斯拉车辆数据自托管记录器，集成
 * 🚗 **多车辆支持**: 支持同时记录多辆特斯拉车辆
 * 📱 **Web 界面**: 提供友好的 Web 管理界面
 * 🌐 **API 接口**: 提供 TeslaMateAPI RESTful 接口
-* 🔐 **安全访问**: 集成 Cloudflare Tunnel 内网穿透，支持 Basic Auth 认证
+* 🔐 **安全访问**: 支持 Basic Auth 认证
 
 ## 安装要求
 
@@ -21,42 +21,23 @@ Mytesla 是一个功能强大的特斯拉车辆数据自托管记录器，集成
 * MQTT 消息队列（内置，自动部署）
 * Grafana 数据可视化（内置，自动部署）
 * TeslaMateAPI RESTful 接口（内置，自动部署）
-* Cloudflare Tunnel（内置，自动部署）
 * Traefik 反向代理（内置，自动部署）
 
 ### 端口说明
 
 * **Traefik HTTP**: 默认端口 80，统一处理所有 HTTP 服务
 
-## 首次配置
-
-### 1. 准备 Cloudflare Tunnel 配置
-
-在安装应用之前，您需要准备 Cloudflare Tunnel 相关配置：
-
-1. **创建 Cloudflare 账号**
-   - 访问 [Cloudflare 官网](https://cloudflare.com/) 注册账号
-   - 添加您的域名到 Cloudflare
-
-2. **创建 Cloudflare Tunnel**
-   - 登录 [Cloudflare Zero Trust Dashboard](https://one.dash.cloudflare.com/)
-   - 进入 Access → Tunnels
-   - 点击 "Create a tunnel" 创建新的隧道
-   - 记录生成的 Tunnel Token
-
-3. **配置域名**（自动配置）
-   - 在安装应用时填入您的域名（例如: `mytesla.example.com` ）
-   - 系统会自动配置 Tunnel 将域名指向内部的 Traefik 服务
-   - 无需手动在 Cloudflare Dashboard 中配置 Public Hostname
-
-### 2. 安装应用
+### 安装应用
 
 在 1Panel 应用商店中找到 Mytesla，点击安装并填写以下必要配置：
 
-#### Cloudflare 配置
+#### DOMAIN 配置
 
-* **Cloudflare Tunnel Token**: 从步骤1获取的隧道令牌
 * **Domain**: 您配置的域名 (例如: `mytesla.example.com`)
+
+#### LETSENCRYPT_EMAIL 配置
+
+* **Let's Encrypt Email**: 用于 SSL 证书的邮箱
 
 #### Basic Auth 配置
 
@@ -128,33 +109,27 @@ Mytesla 是一个功能强大的特斯拉车辆数据自托管记录器，集成
 
 ### 常见问题
 
-1. **无法通过域名访问服务**
-   - 检查 Cloudflare Tunnel 服务是否正常运行： `docker logs mytesla-cloudflared`
-
-   - 确认域名 DNS 解析正确
-   - 验证 Tunnel Token 配置正确
-
-2. **Basic Auth 认证失败**
+1. **Basic Auth 认证失败**
    - 检查用户名和密码是否正确
    - 确认 .htpasswd 文件生成成功
    - 查看 Traefik 日志获取详细错误信息
 
-3. **无法连接特斯拉账号**
+2. **无法连接特斯拉账号**
    - 检查网络连接
    - 确认特斯拉账号和密码正确
    - 查看 TeslaMate 日志获取详细错误信息
 
-4. **Grafana 无法显示数据**
+3. **Grafana 无法显示数据**
    - 确认数据库连接正常
    - 检查 TeslaMate 是否成功收集到数据
    - 验证 Grafana 数据源配置
 
-5. **API 接口无法访问**
+4. **API 接口无法访问**
    - 检查 TeslaMateAPI 服务状态
    - 验证 API Token 配置正确
    - 测试 API 连通性：访问 `/api/ping` 端点
 
-6. **服务启动失败**
+5. **服务启动失败**
    - 检查端口是否被占用
    - 确认数据库服务正常运行
    - 查看容器日志排查具体问题
@@ -169,7 +144,6 @@ docker ps
 docker logs mytesla                    # TeslaMate
 docker logs mytesla-grafana           # Grafana
 docker logs mytesla-teslamateapi      # TeslaMateAPI
-docker logs mytesla-cloudflared       # Cloudflare Tunnel
 docker logs mytesla-traefik           # Traefik
 ```
 
@@ -177,11 +151,10 @@ docker logs mytesla-traefik           # Traefik
 
 * [TeslaMate 官方文档](https://docs.teslamate.org/)
 * [Grafana 官方文档](https://grafana.com/docs/)
-* [Cloudflare Tunnel 文档](https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/)
 * [Mytesla.cc 官网](https://mytesla.cc/)
 
 ## 注意事项
 
-* 首次启动可能需要几分钟时间初始化数据库和建立 Cloudflare Tunnel 连接
+* 首次启动可能需要几分钟时间初始化数据库
 * 建议在稳定的网络环境下运行
-* 妥善保管 API Token 和 Cloudflare Tunnel Token
+* 妥善保管 API Token
