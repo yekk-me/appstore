@@ -6,9 +6,12 @@ services:
     image: cloudflare/cloudflared:latest
     container_name: ${CONTAINER_NAME}-cloudflared
     restart: unless-stopped
-    command: tunnel run
-    environment:
-      - TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}
+    command: 
+      - tunnel
+      - --no-autoupdate
+      - run
+      - --token
+      - ${CLOUDFLARE_TUNNEL_TOKEN}
     depends_on:
       - traefik
 
